@@ -134,6 +134,7 @@ expSheet:	TK_IDENTIFIER
 	|		TK_IDENTIFIER'['LIT_INT']'
 	|		LIT_INT
 	|		LIT_CHAR
+	|		LIT_REAL
 	;
 
 args:		exp ',' args
