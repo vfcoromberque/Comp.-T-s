@@ -1,4 +1,5 @@
 
+
 %token KW_CHAR           
 %token KW_INT           
 %token KW_FLOAT           
@@ -161,10 +162,6 @@ value: 		LIT_INT
 
 
 %%
-
-
-
-
 
 
 

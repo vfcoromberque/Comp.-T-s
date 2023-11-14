@@ -1,8 +1,13 @@
 %{
-	#include "y.tab.h"
 	#include "hash.h"
+	#include "y.tab.h"
 	int running = 1;
 	int lineNumber = 1;
+	int getLineNumber(void)
+	{
+		return lineNumber;
+	}
+	int yyerror();
 %}
 
 %x COMMENT
@@ -56,14 +61,9 @@ return						    {return KW_RETURN;}
 
 %%
 
+#include "y.tab.c"
 #include "main.c"
 #include "hash.c"
-#include "y.tab.c"
-
-int getLineNumber(void)
-{
-	return lineNumber;
-}
 
 void initMe(void)
 {
