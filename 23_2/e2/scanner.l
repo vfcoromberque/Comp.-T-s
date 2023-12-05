@@ -7,7 +7,9 @@
 	{
 		return lineNumber;
 	}
+	int yyparse();
 	int yyerror();
+	int yylex();
 %}
 
 %x COMMENT

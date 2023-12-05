@@ -51,19 +51,13 @@ program: 	decGen
 	;
 	
 decGen: 	dec ';' decGen
-	| 		functGen
+	| 		code codeGen
 	|
 	;
 	
 dec: 		type TK_IDENTIFIER '=' value
 	| 		type TK_IDENTIFIER'['LIT_INT']' vector
-	;
-	
-functGen: 	funct ';' functGen
-	|		code codeGen
-	;
-
-funct: 		type TK_IDENTIFIER '('param')'
+	|		type TK_IDENTIFIER '('param')'
 	;
 	
 param: 		type TK_IDENTIFIER ',' param
@@ -113,26 +107,23 @@ else:		KW_ELSE cmd
 	;
 
 exp:		'('exp')'
-	|		expSheet '+' exp
-	|		expSheet '-' exp
-	|		expSheet '*' exp
-	|		expSheet '/' exp
-	|		expSheet '<' exp
-	|		expSheet '>' exp
-	|		expSheet OPERATOR_LE exp
-	|		expSheet OPERATOR_GE exp
-	|		expSheet OPERATOR_EQ exp
-	|		expSheet OPERATOR_DIF exp
-	|		expSheet '&' exp
-	|		expSheet '|' exp
-	|		expSheet '~' exp
+	|		exp '+' exp
+	|		exp '-' exp
+	|		exp '*' exp
+	|		exp '/' exp
+	|		exp '<' exp
+	|		exp '>' exp
+	|		exp OPERATOR_LE exp
+	|		exp OPERATOR_GE exp
+	|		exp OPERATOR_EQ exp
+	|		exp OPERATOR_DIF exp
+	|		exp '&' exp
+	|		exp '|' exp
+	|		exp '~' exp
 	|		TK_IDENTIFIER'('args')'
 	|		KW_INPUT'('type')'
-	|		expSheet
-	;
-
-expSheet:	TK_IDENTIFIER
-	|		TK_IDENTIFIER'['LIT_INT']'
+	|		TK_IDENTIFIER
+	|		TK_IDENTIFIER'['exp']'
 	|		LIT_INT
 	|		LIT_CHAR
 	|		LIT_REAL
