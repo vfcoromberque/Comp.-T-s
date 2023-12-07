@@ -75,8 +75,8 @@ void astPrint(AST *node, int level)
     case AST_DECLARATION:
         fprintf(stderr, "AST_DECLARATION");
         break;
-    case AST_FCALL:
-        fprintf(stderr, "AST_FCALL");
+    case AST_FOOCALL:
+        fprintf(stderr, "AST_FOOCALL");
         break;
     case AST_VECCALL:
         fprintf(stderr, "AST_VECCALL");
@@ -114,6 +114,36 @@ void astPrint(AST *node, int level)
     case AST_CMD:
         fprintf(stderr, "AST_CMD");
         break;
+    case AST_IDENTIFIER:
+        fprintf(stderr, "AST_IDENTIFIER");
+        break;
+    case AST_DEC:
+        fprintf(stderr, "AST_DEC");
+        break;
+    case AST_IDDEC:
+        fprintf(stderr, "AST_IDDEC");
+        break;
+    case AST_VECDEC:
+        fprintf(stderr, "AST_VECDEC");
+        break;
+    case AST_FOODEC:
+        fprintf(stderr, "AST_FOODEC");
+        break;
+    case AST_PARAM:
+        fprintf(stderr, "AST_PARAM");
+        break;
+    case AST_VECVAL:
+        fprintf(stderr, "AST_VECVAL");
+        break;
+    case AST_KWCHAR:
+        fprintf(stderr, "AST_KWCHAR");
+        break;
+    case AST_KWINT:
+        fprintf(stderr, "AST_KWINT");
+        break;
+    case AST_KWFLOAT:
+        fprintf(stderr, "AST_KWFLOAT");
+        break;
     default:
         fprintf(stderr, "AST_UNKNOWN");
         break;
@@ -122,7 +152,7 @@ void astPrint(AST *node, int level)
     if (node->symbol != 0)
         fprintf(stderr, ",%s\n", node->symbol->text);
     else
-        fprintf(stderr, ",0\n");
+        fprintf(stderr, "\n");
     for (int i = 0; i < MAX_SONS; ++i)
     {
         astPrint(node->son[i], level + 1);

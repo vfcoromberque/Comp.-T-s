@@ -57,6 +57,11 @@
 %type<ast> string
 %type<ast> else
 %type<ast> codeGen
+%type<ast> decGen
+%type<ast> dec
+%type<ast> int
+%type<ast> param
+%type<ast> vector
 
 
 %left TK_IDENTIFIER
@@ -79,22 +84,22 @@
 
 
 
-program: 	decGen						
+program: 	decGen							{ astPrint($1, 0);}
 	;
 	
-decGen: 	dec ';' decGen				
-	| 		codeGen							{ astPrint($1, 0); }
-	|
+decGen: 	dec ';' decGen					{ $$ = astCreate(AST_DEC, 0, $1, $3, 0, 0); }
+	| 		codeGen							{ $$ = $1; }
+	|										{ $$ = 0; }
 	;
 	
-dec: 		type id '=' value
-	| 		type id'['LIT_INT']' vector
-	|		type id '('param')'
+dec: 		type id '=' value				{ $$ = astCreate(AST_IDDEC, 0, $1, $2, $4, 0);}
+	| 		type id'['int']' vector			{ $$ = astCreate(AST_VECDEC, 0, $1, $2, $4, $6);}
+	|		type id '('param')'				{ $$ = astCreate(AST_FOODEC, 0, $1, $2, $4, 0);}
 	;
 	
-param: 		type id ',' param
-	|		type id
-	|
+param: 		type id ',' param				{ $$ = astCreate(AST_PARAM, 0, $1, $2, $4, 0);}
+	|		type id							{ $$ = astCreate(AST_PARAM, 0, $1, $2, 0, 0);}
+	|										{ $$ = 0; }
 	;
 
 codeGen:	KW_CODE id cmd codeGen						{ $$ = astCreate(AST_CODE, 0, $2, $3, $4, 0); }
@@ -149,9 +154,9 @@ exp:		'('exp')'					{ $$ = $2; }
 	|		exp '&' exp					{ $$ = astCreate(AST_AND, 0, $1, $3, 0, 0); }
 	|		exp '|' exp					{ $$ = astCreate(AST_OR, 0, $1, $3, 0, 0); }
 	|		'~' exp						{ $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0); }
-	|		id'('args')'				{ $$ = astCreate(AST_FCALL, 0, $1, $3, 0, 0);}
+	|		id'('args')'				{ $$ = astCreate(AST_FOOCALL, 0, $1, $3, 0, 0);}
 	|		KW_INPUT'('type')'			{ $$ = astCreate(AST_INPUT, 0, $3, 0, 0, 0);}
-	|		TK_IDENTIFIER				{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+	|		TK_IDENTIFIER				{ $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0); }
 	|		veccall						{ $$ = $1;}
 	|		LIT_INT						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
 	|		LIT_CHAR					{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
@@ -162,13 +167,13 @@ args:		exp ',' args				{ $$ = astCreate(AST_ARG, 0, $1, $3, 0, 0); }
 	|		exp							{ $$ = astCreate(AST_ARG, 0, $1, 0, 0, 0); }
 	;
 
-vector: 	value vector
-	|
+vector: 	value vector				{ $$ = astCreate(AST_VECVAL, 0, $1, $2, 0, 0); }
+	|									{ $$ = 0; }
 	;
 
-type: 		KW_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
-	| 		KW_INT						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
-	| 		KW_FLOAT					{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+type: 		KW_CHAR						{ $$ = astCreate(AST_KWCHAR, $1, 0, 0, 0, 0); }
+	| 		KW_INT						{ $$ = astCreate(AST_KWINT, $1, 0, 0, 0, 0); }
+	| 		KW_FLOAT					{ $$ = astCreate(AST_KWFLOAT, $1, 0, 0, 0, 0); }
 	;
 	
 value: 		LIT_INT						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
@@ -176,13 +181,16 @@ value: 		LIT_INT						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
 	| 		LIT_CHAR					{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
 	;
 
-id:			TK_IDENTIFIER				{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+id:			TK_IDENTIFIER				{ $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0); }
 	;
 
 veccall:  	id'['exp']'					{ $$ = astCreate(AST_VECCALL, 0, $1, $3, 0, 0);}
 	;
 
 string: 	LIT_STRING					{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	;
+
+int: 	LIT_INT							{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 	

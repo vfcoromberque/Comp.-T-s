@@ -25,7 +25,7 @@
 #define AST_OR 14
 #define AST_NOT 15
 #define AST_DECLARATION 16
-#define AST_FCALL 17
+#define AST_FOOCALL 17
 #define AST_VECCALL 18
 #define AST_INPUT 19
 #define AST_ATR 20
@@ -38,6 +38,17 @@
 #define AST_CODE 27
 #define AST_CODELIST 28
 #define AST_CMD 29
+#define AST_IDENTIFIER 30
+#define AST_DEC 31
+#define AST_IDDEC 32
+#define AST_VECDEC 33
+#define AST_FOODEC 34
+#define AST_PARAM 35
+#define AST_VECVAL 36
+#define AST_KWCHAR 37
+#define AST_KWINT 38
+#define AST_KWFLOAT 39
+
 
 typedef struct astnode
 {
