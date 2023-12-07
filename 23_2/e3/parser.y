@@ -124,8 +124,8 @@ cmdList:	cmd cmdList 				{ $$ = astCreate(AST_CMD, 0, $1, $2, 0, 0); }
 	|									{ $$ = 0;}
 	;
 
-atrb:		id '=' exp					{ $$ = astCreate(AST_ATR, 0, $1, $3, 0, 0); }
-	|		veccall '=' exp				{ $$ = astCreate(AST_ATR, 0, $1, $3, 0, 0); }
+atrb:		id '=' exp					{ $$ = astCreate(AST_ATTR, 0, $1, $3, 0, 0); }
+	|		veccall '=' exp				{ $$ = astCreate(AST_ATTR, 0, $1, $3, 0, 0); }
 	;
 
 print:		KW_PRINT string				{ $$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0); }
@@ -140,7 +140,7 @@ flowCmd:	KW_IF '('exp')' cmdStart						{ $$ = astCreate(AST_IF, 0, $3, $5, 0, 0)
 	|		KW_WHILE '('exp')' cmdStart						{ $$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0); }
 	;
 
-exp:		'('exp')'					{ $$ = $2; }
+exp:		'('exp')'					{ $$ = astCreate(AST_PRTHSIS, 0, $2, 0, 0, 0); }
 	|		exp '+' exp					{ $$ = astCreate(AST_ADD, 0, $1, $3, 0, 0); }
 	|		exp '-' exp					{ $$ = astCreate(AST_SUB, 0, $1, $3, 0, 0); }
 	|		exp '*' exp					{ $$ = astCreate(AST_MUL, 0, $1, $3, 0, 0); }

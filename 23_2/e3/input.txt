@@ -25,6 +25,7 @@ code main
   1a = 0;
   d = d - i;
   d = 5;
+  c = 1 * (5 + 2);
   v[d] = 55;
   print v[5];
   print d;

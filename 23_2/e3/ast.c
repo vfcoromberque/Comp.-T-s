@@ -72,9 +72,6 @@ void astPrint(AST *node, int level)
     case AST_NOT:
         fprintf(stderr, "AST_NOT");
         break;
-    case AST_DECLARATION:
-        fprintf(stderr, "AST_DECLARATION");
-        break;
     case AST_FOOCALL:
         fprintf(stderr, "AST_FOOCALL");
         break;
@@ -84,7 +81,7 @@ void astPrint(AST *node, int level)
     case AST_INPUT:
         fprintf(stderr, "AST_INPUT");
         break;
-    case AST_ATR:
+    case AST_ATTR:
         fprintf(stderr, "AST_ATR");
         break;
     case AST_ARG:
@@ -146,6 +143,9 @@ void astPrint(AST *node, int level)
         break;
     case AST_CMDBLOCK:
         fprintf(stderr, "AST_CMDBLOCK");
+        break;
+    case AST_PRTHSIS:
+        fprintf(stderr, "AST_PRTHSIS");
         break;
     default:
         fprintf(stderr, "AST_UNKNOWN");

@@ -24,11 +24,10 @@
 #define AST_AND 13
 #define AST_OR 14
 #define AST_NOT 15
-#define AST_DECLARATION 16
 #define AST_FOOCALL 17
 #define AST_VECCALL 18
 #define AST_INPUT 19
-#define AST_ATR 20
+#define AST_ATTR 20
 #define AST_ARG 21
 #define AST_PRINT 22
 #define AST_RETURN 23
@@ -49,7 +48,7 @@
 #define AST_KWFLOAT 39
 #define AST_IFELSE 40
 #define AST_CMDBLOCK 41
-
+#define AST_PRTHSIS 42
 
 typedef struct astnode
 {
