@@ -51,7 +51,7 @@ program: 	decGen
 	;
 	
 decGen: 	dec ';' decGen
-	| 		code codeGen
+	| 		codeGen
 	|
 	;
 	
@@ -65,8 +65,8 @@ param: 		type TK_IDENTIFIER ',' param
 	|
 	;
 
-codeGen:	code
-	|
+codeGen:	code codeGen
+	|		code
 	;
 
 code:		KW_CODE TK_IDENTIFIER cmd
