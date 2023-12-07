@@ -38,7 +38,6 @@
 #define AST_CODE 27
 #define AST_CODELIST 28
 #define AST_CMD 29
-#define AST_IDENTIFIER 30
 #define AST_DEC 31
 #define AST_IDDEC 32
 #define AST_VECDEC 33
@@ -48,6 +47,8 @@
 #define AST_KWCHAR 37
 #define AST_KWINT 38
 #define AST_KWFLOAT 39
+#define AST_IFELSE 40
+#define AST_CMDBLOCK 41
 
 
 typedef struct astnode

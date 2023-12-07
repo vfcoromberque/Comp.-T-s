@@ -114,9 +114,6 @@ void astPrint(AST *node, int level)
     case AST_CMD:
         fprintf(stderr, "AST_CMD");
         break;
-    case AST_IDENTIFIER:
-        fprintf(stderr, "AST_IDENTIFIER");
-        break;
     case AST_DEC:
         fprintf(stderr, "AST_DEC");
         break;
@@ -143,6 +140,12 @@ void astPrint(AST *node, int level)
         break;
     case AST_KWFLOAT:
         fprintf(stderr, "AST_KWFLOAT");
+        break;
+    case AST_IFELSE:
+        fprintf(stderr, "AST_IFELSE");
+        break;
+    case AST_CMDBLOCK:
+        fprintf(stderr, "AST_CMDBLOCK");
         break;
     default:
         fprintf(stderr, "AST_UNKNOWN");
