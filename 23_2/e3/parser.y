@@ -61,6 +61,7 @@
 %type<ast> int
 %type<ast> param
 %type<ast> vector
+%type<ast> cmdStart
 
 
 %left TK_IDENTIFIER
@@ -101,11 +102,11 @@ param: 		type id ',' param				{ $$ = astCreate(AST_PARAM, 0, $1, $2, $4, 0);}
 	|										{ $$ = 0; }
 	;
 
-codeGen:	KW_CODE id cmd codeGen						{ $$ = astCreate(AST_CODE, 0, $2, $3, $4, 0); }
-	|		KW_CODE id cmd								{ $$ = astCreate(AST_CODE, 0, $2, $3, 0, 0); }
+codeGen:	KW_CODE id cmdStart codeGen						{ $$ = astCreate(AST_CODE, 0, $2, $3, $4, 0); }
+	|		KW_CODE id cmdStart								{ $$ = astCreate(AST_CODE, 0, $2, $3, 0, 0); }
 	;
 
-cmd:		block								{ $$ = astCreate(AST_CMDBLOCK, 0, $1, 0, 0, 0); }
+cmd:		block								{ $$ = $1; }
 	|		flowCmd								{ $$ = $1; }
 	|		atrb ';'							{ $$ = $1; }
 	|		print ';'							{ $$ = $1; }
@@ -113,7 +114,10 @@ cmd:		block								{ $$ = astCreate(AST_CMDBLOCK, 0, $1, 0, 0, 0); }
 	|		';'									{ $$ = 0; }
 	;
 
-block:		'{' cmdList '}'						{ $$ = $2; }
+cmdStart:	cmd									{ $$ = astCreate(AST_CMD, 0, $1, 0, 0, 0); }
+	;
+
+block:		'{' cmdList '}'						{ $$ = astCreate(AST_CMDBLOCK, 0, $2, 0, 0, 0); }
 	;
 
 cmdList:	cmd cmdList 				{ $$ = astCreate(AST_CMD, 0, $1, $2, 0, 0); }
@@ -131,9 +135,9 @@ print:		KW_PRINT string				{ $$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0); }
 return:		KW_RETURN exp				{ $$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0); }
 	;
 
-flowCmd:	KW_IF '('exp')' cmd				{ $$ = astCreate(AST_IF, 0, $3, astCreate(AST_CMD, 0, $5, 0, 0, 0), 0, 0); }
-	|		KW_IF '('exp')' cmd KW_ELSE cmd		{ $$ = astCreate(AST_IFELSE, 0, $3, astCreate(AST_CMD, 0, $5, 0, 0, 0), astCreate(AST_CMD, 0, $7, 0, 0, 0), 0); }
-	|		KW_WHILE '('exp')' cmd				{ $$ = astCreate(AST_WHILE, 0, $3, astCreate(AST_CMD, 0, $5, 0, 0, 0), 0, 0); }
+flowCmd:	KW_IF '('exp')' cmdStart						{ $$ = astCreate(AST_IF, 0, $3, $5, 0, 0); }
+	|		KW_IF '('exp')' cmdStart KW_ELSE cmdStart		{ $$ = astCreate(AST_IFELSE, 0, $3, $5, $7, 0); }
+	|		KW_WHILE '('exp')' cmdStart						{ $$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0); }
 	;
 
 exp:		'('exp')'					{ $$ = $2; }
