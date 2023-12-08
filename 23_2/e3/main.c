@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash.h"
+#include "ast.h"
 
 extern FILE *yyin;
+extern AST *getRoot();
 int yyparse();
 int getLineNumber();
 
@@ -13,9 +15,11 @@ int main(int argc, char **argv)
 {
     int tok;
 
-    if (argc < 2)
+    FILE *output;
+
+    if (argc < 3)
     {
-        fprintf(stderr, "Call: ./a.out file_name\n");
+        fprintf(stderr, "Call: ./etapa3 file_name file_name\n");
         exit(1);
     }
 
@@ -26,13 +30,22 @@ int main(int argc, char **argv)
         exit(2);
     }
 
+    output = fopen(argv[2], "w+");
+    if (output == 0)
+    {
+        fprintf(stderr, "Cannot open file %s\n", argv[2]);
+        exit(2);
+    }
+
     hashInit();
 
     yyparse();
 
-    printf("Main done %d linhas\n", getLineNumber());
+    // printf("Main done %d linhas\n", getLineNumber());
 
-    hashPrint();
+    // hashPrint();
+
+    astPrintCode(getRoot(), output);
 
     exit(0);
 }

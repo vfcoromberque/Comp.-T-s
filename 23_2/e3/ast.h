@@ -33,9 +33,7 @@
 #define AST_RETURN 23
 #define AST_IF 24
 #define AST_WHILE 25
-#define AST_ELSE 26
 #define AST_CODE 27
-#define AST_CODELIST 28
 #define AST_CMD 29
 #define AST_DEC 31
 #define AST_IDDEC 32
@@ -59,6 +57,8 @@ typedef struct astnode
 
 AST *astCreate(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s3);
 void astPrint(AST *node, int level);
+
+void astPrintCode(AST *node, FILE *output);
 
 #endif
 

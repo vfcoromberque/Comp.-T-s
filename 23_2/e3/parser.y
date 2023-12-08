@@ -6,6 +6,8 @@
 	int yylex();
 	int yyerror();
 	int getLineNumber();
+
+	AST* root;
 %}
 
 %union
@@ -62,6 +64,7 @@
 %type<ast> param
 %type<ast> vector
 %type<ast> cmdStart
+%type<ast> program
 
 
 %left TK_IDENTIFIER
@@ -84,7 +87,7 @@
 
 
 
-program: 	decGen							{ astPrint($1, 0);}
+program: 	decGen							{ root = $$; astPrint($1, 0);}
 	;
 	
 decGen: 	dec ';' decGen					{ $$ = astCreate(AST_DEC, 0, $1, $3, 0, 0); }
@@ -200,7 +203,9 @@ int: 	LIT_INT							{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 
 %%
 
-
+AST* getRoot(){
+	return root;
+}
 
 int yyerror ()
 {
