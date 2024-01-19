@@ -1,0 +1,10 @@
+code main
+  {
+  1a = 0 + 1 + 2 + 3 -2;
+  d = d - i;
+  d = 5;
+  v[d] = 55;
+  print v[5];
+  print d;
+  i = 2;
+  }
