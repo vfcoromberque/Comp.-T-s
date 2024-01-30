@@ -35,12 +35,12 @@
 
 #define TAC_IFS 19
 #define TAC_JUMP 20
-#define TAC_CALL 21
+#define TAC_FOOCALL 21
 
 #define TAC_ARG 22
 #define TAC_RETURN 23
 
-#define TAC_VECREAD 24
+#define TAC_VECCALL 24
 #define TAC_VECVAR 25
 #define TAC_VECINIT 26
 #define TAC_INPUT 27
@@ -51,6 +51,8 @@
 
 #define TAC_IFELSE 31
 #define TAC_IF 32
+
+#define TAC_FOODEC 33
 
 typedef struct tac
 {
@@ -74,6 +76,6 @@ tac *createBinop(int type, tac *sons[]);
 tac *createIf(tac *sons[]);
 tac *createLoop(tac *sons[], HASH_NODE *label);
 
-tac *createFunction(tac *symbol, tac *params, tac *code);
+tac *createFunction(tac *symbol, tac *code, tac *rest);
 
 #endif

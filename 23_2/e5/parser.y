@@ -187,9 +187,9 @@ vector: 	value vector				{ $$ = astCreate(AST_VECVAL, 0, $1, $2, 0, 0, getLineNu
 	|									{ $$ = 0; }
 	;
 
-type: 		KW_CHAR						{ $$ = astCreate(AST_KWCHAR, 0, 0, 0, 0, 0, getLineNumber()); }
-	| 		KW_INT						{ $$ = astCreate(AST_KWINT, 0, 0, 0, 0, 0, getLineNumber()); }
-	| 		KW_FLOAT					{ $$ = astCreate(AST_KWFLOAT, 0, 0, 0, 0, 0, getLineNumber()); }
+type: 		KW_CHAR						{ $$ = astCreate(AST_KWCHAR, $1, 0, 0, 0, 0, getLineNumber()); }
+	| 		KW_INT						{ $$ = astCreate(AST_KWINT, $1, 0, 0, 0, 0, getLineNumber()); }
+	| 		KW_FLOAT					{ $$ = astCreate(AST_KWFLOAT, $1, 0, 0, 0, 0, getLineNumber()); }
 	;
 	
 value: 		LIT_INT						{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0, getLineNumber()); }

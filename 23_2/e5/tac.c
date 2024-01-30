@@ -121,8 +121,8 @@ void printTac(tac *l)
     case TAC_JUMP:
         fprintf(stderr, "JUMP(");
         break;
-    case TAC_CALL:
-        fprintf(stderr, "CALL(");
+    case TAC_FOOCALL:
+        fprintf(stderr, "FOOCALL(");
         break;
     case TAC_ARG:
         fprintf(stderr, "ARG(");
@@ -130,8 +130,8 @@ void printTac(tac *l)
     case TAC_RETURN:
         fprintf(stderr, "RETURN(");
         break;
-    case TAC_VECREAD:
-        fprintf(stderr, "VECREAD(");
+    case TAC_VECCALL:
+        fprintf(stderr, "VECCALL(");
         break;
     case TAC_VECVAR:
         fprintf(stderr, "VECVAR(");
@@ -150,6 +150,9 @@ void printTac(tac *l)
         break;
     case TAC_PRINT:
         fprintf(stderr, "PRINT(");
+        break;
+    case TAC_FOODEC:
+        fprintf(stderr, "FOODEC(");
         break;
 
     default:
@@ -192,6 +195,8 @@ tac *createTacs(AST *node, HASH_NODE *currentLoopLabel)
     {
     case AST_SYMBOL:
         return newTac(TAC_SYMBOL, node->symbol, 0, 0);
+    case AST_IDDEC:
+        return tacJoin(sons[0], newTac(TAC_MOVE, node->son[1]->symbol, sons[2] ? sons[2]->res : 0, 0));
 
     case AST_ADD:
         return createBinop(TAC_ADD, sons);
@@ -222,33 +227,37 @@ tac *createTacs(AST *node, HASH_NODE *currentLoopLabel)
     case AST_NOT:
         return createBinop(TAC_NOT, sons);
     case AST_ATTR:
-        return tacJoin(sons[0], newTac(TAC_MOVE, node->son[0]->symbol, sons[0] ? sons[0]->res : 0, 0));
+        return tacJoin(tacJoin(sons[0], newTac(TAC_MOVE, node->son[0]->symbol, sons[1] ? sons[1]->res : 0, 0)), sons[1]);
     case AST_VECATTR:
-        return tacJoin(sons[0], tacJoin(sons[1], newTac(TAC_MOVEVEC, node->son[0]->son[0]->symbol, sons[0] ? sons[0]->res : 0, sons[1] ? sons[1]->res : 0)));
-    // case AST_INPUT:
-    //     return newTac(TAC_INPUT, dataTypeName[node->dataType], 0, 0);
+        return tacJoin(sons[0], tacJoin(sons[1], newTac(TAC_MOVEVEC, node->son[0]->son[0]->symbol, node->son[0]->son[1]->symbol, sons[1] ? sons[1]->res : 0)));
+    case AST_INPUT:
+        return tacJoin(sons[0], newTac(TAC_INPUT, sons[1] ? sons[1]->res : 0, 0, 0));
+    case AST_PRINT:
+        return tacJoin(sons[0], newTac(TAC_PRINT, sons[0] ? sons[0]->res : 0, 0, 0));
     case AST_RETURN:
         return tacJoin(sons[0], newTac(TAC_RETURN, sons[0] ? sons[0]->res : 0, 0, 0));
-    case AST_IFELSE: // makeTAC_AST_ENTAO_SENAUM_SE;
+    case AST_IFELSE:
         return createIf(sons);
     case AST_IF:
         return createIf(sons);
     case AST_WHILE:
         return createLoop(sons, currentLoopLabel);
 
-    case AST_FOOCALL:
-        return tacJoin(sons[0], newTac(TAC_CALL, makeTemp(), node->symbol, 0));
-    case AST_ARG:
-        return tacJoin(sons[1], tacJoin(sons[0], newTac(TAC_ARG, sons[0] ? sons[0]->res : 0, 0, 0)));
-    case AST_VECCALL:
-        return tacJoin(sons[0], newTac(TAC_VECREAD, makeTemp(), node->son[0]->symbol, sons[0] ? sons[0]->res : 0));
-    case AST_VECDEC:
-        return tacJoin(sons[0], newTac(TAC_VECVAR, makeTemp(), node->son[1]->symbol, sons[0] ? sons[0]->res : 0));
-
     case AST_FOODEC:
-        return createFunction(newTac(TAC_SYMBOL, node->son[1]->symbol, 0, 0), sons[1], sons[2]);
+        return tacJoin(sons[1], tacJoin(newTac(TAC_FOODEC, node->son[1]->symbol, 0, 0), sons[2]));
+    case AST_FOOCALL:
+        return tacJoin(tacJoin(sons[0], newTac(TAC_FOOCALL, makeTemp(), node->son[0]->symbol, 0)), sons[1]);
+    case AST_ARG:
+        return tacJoin(newTac(TAC_ARG, sons[0] ? sons[0]->res : 0, 0, 0), sons[1]);
+    case AST_VECCALL:
+        return tacJoin(sons[0], newTac(TAC_VECCALL, node->son[0]->symbol, sons[1] ? sons[1]->res : 0, 0));
+    case AST_VECDEC:
+        return tacJoin(sons[0], newTac(TAC_MOVEVEC, node->son[1]->symbol, sons[2] ? sons[2]->res : 0, sons[3] ? makeTemp() : 0));
+
+    case AST_CODE:
+        return createFunction(newTac(TAC_SYMBOL, node->son[0]->symbol, 0, 0), sons[1], sons[2]);
     case AST_PARAM:
-        return tacJoin(newTac(TAC_PARAM, node->symbol, 0, 0), sons[1]);
+        return tacJoin(newTac(TAC_PARAM, node->son[1]->symbol, 0, 0), sons[2]);
 
     default:
         return tacJoin(tacJoin(tacJoin(sons[0], sons[1]), sons[2]), sons[3]);
@@ -302,7 +311,7 @@ tac *createLoop(tac *sons[], HASH_NODE *whileLabel)
     return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(whileLabelTac, sons[0]), whileTac), sons[1]), jumpTac), jumpLabelTac);
 }
 
-tac *createFunction(tac *symbol, tac *params, tac *code)
+tac *createFunction(tac *symbol, tac *code, tac *rest)
 {
-    return tacJoin(tacJoin(tacJoin(newTac(TAC_FOOSTART, symbol->res, 0, 0), params), code), newTac(TAC_FOOEND, symbol->res, 0, 0));
+    return tacJoin(tacJoin(tacJoin(newTac(TAC_FOOSTART, symbol->res, 0, 0), code), newTac(TAC_FOOEND, symbol->res, 0, 0)), rest);
 }

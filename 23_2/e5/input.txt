@@ -38,7 +38,7 @@ code main
 
   while (i<10)
     {
-    1a = incn('e');
+    1a = incn('e',1);
     i = incn(i,1);
     d = incn(d,d);
     }
