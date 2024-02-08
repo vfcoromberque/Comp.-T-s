@@ -29,6 +29,7 @@ typedef struct hash_node
     char *text;
     int dataType;
     struct hash_node *next;
+    int strCode;
 } HASH_NODE;
 
 void hashInit(void);
@@ -40,5 +41,6 @@ void hashPrint(void);
 int hashCheckUndeclared();
 HASH_NODE *makeTemp();
 HASH_NODE *makeLabel();
+char *makeStrCode();
 
 #endif

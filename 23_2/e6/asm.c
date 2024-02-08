@@ -4,31 +4,72 @@
 
 #include "asm.h"
 
+extern HASH_NODE *Table[HASH_SIZE];
+
 void generateAsm(tac *firstTac, AST *ast)
 {
 
     FILE *outputFile = fopen("asm.s", "w");
 
     fprintf(outputFile, "printIntStr:\n"
-                        "\t.string	\"%%d\n\n");
+                        "\t.string	\"%%d\"\n\n");
 
     fprintf(outputFile, "printFloatStr:\n"
-                        "\t.string	\"%%f\n\n");
+                        "\t.string	\"%%f\"\n\n");
 
     fprintf(outputFile, "printCharStr:\n"
-                        "\t.string	\"%%c\n\n");
+                        "\t.string	\"%%c\"\n\n");
 
-    int dec = 0;
+    int i;
+    HASH_NODE *node;
+    for (i = 0; i < HASH_SIZE; ++i)
+        for (node = Table[i]; node; node = node->next)
+        {
+            if (node->type == SYMBOL_LIT_STRING)
+            {
+                fprintf(outputFile, "_s%d: \n", node->strCode);
+                fprintf(outputFile, "\t.string\t%s\n\n", node->text);
+            }
+        }
+
+    fprintf(outputFile, "\t.data \n");
+    int j;
+    HASH_NODE *nodeFin;
+    for (j = 0; j < HASH_SIZE; ++j)
+        for (nodeFin = Table[j]; nodeFin; nodeFin = nodeFin->next)
+        {
+            if (nodeFin->type == SYMBOL_LIT_INT)
+            {
+                fprintf(outputFile, "_%s: \n", nodeFin->text);
+                fprintf(outputFile, "\t.long\t%s\n", nodeFin->text);
+            }
+            else if (nodeFin->type == SYMBOL_VAR || !strncmp(nodeFin->text, "_temp", (long unsigned)5) || nodeFin->type == SYMBOL_VECTOR)
+            {
+                fprintf(outputFile, "_%s: \n", nodeFin->text);
+                fprintf(outputFile, "\t.long\t%d\n", 0);
+            }
+            else if (SYMBOL_LIT_CHAR && nodeFin->text[0] == '\'')
+            {
+                fprintf(outputFile, "_char%c: \n", nodeFin->text[1]);
+                fprintf(outputFile, "\t.long\t%d\n", nodeFin->text[1] - '0');
+            }
+        }
 
     tac *itTac = firstTac;
+
     for (itTac = firstTac; itTac; itTac = itTac->next)
     {
         switch (itTac->type)
         {
         case TAC_MOVE:
-            fprintf(outputFile, "##TAC_MOVE\n"
-                                "\tmovl	$%s, %s(%%rip)\n\n",
-                    itTac->op1 ? itTac->op1->text : 0, itTac->res->text);
+            fprintf(outputFile, "##TAC_VARDEC\n");
+            if (SYMBOL_LIT_CHAR && itTac->op1->text[0] == '\'')
+                fprintf(outputFile, "\tmovl	_char%c(%%rip), ", itTac->op1->text[1]);
+            else
+                fprintf(outputFile, "\tmovl	_%s(%%rip), ", itTac->op1->text);
+            fprintf(outputFile, "%%eax\n");
+            fprintf(outputFile, "\tmovl	%%eax, ");
+            fprintf(outputFile, "_%s(%%rip)\n\n", itTac->res->text);
             break;
 
         case TAC_MOVEVEC:
@@ -38,28 +79,28 @@ void generateAsm(tac *firstTac, AST *ast)
         case TAC_PRINT:
             if (!itTac->res->dataType)
                 fprintf(outputFile, "##TAC_PRINT\n"
-                                    "\tmovl	$%s, %%esi\n"
+                                    "\tmovl	_s%d, %%esi\n"
                                     "\tleaq	printStr(%%rip), %%rax\n"
                                     "\tmovq	%%rax, %%rdi\n"
                                     "\tcall	printf@PLT\n\n",
-                        itTac->res->text);
+                        itTac->res->strCode);
             else if (itTac->res->dataType == DATATYPE_CHAR)
                 fprintf(outputFile, "##TAC_PRINT\n"
-                                    "\tmovl	$%s, %%esi\n"
+                                    "\tmovl	_%s, %%esi\n"
                                     "\tleaq	printCharStr(%%rip), %%rax\n"
                                     "\tmovq	%%rax, %%rdi\n"
                                     "\tcall	printf@PLT\n\n",
                         itTac->res->text);
             else if (itTac->res->dataType == DATATYPE_FLOAT)
                 fprintf(outputFile, "##TAC_PRINT\n"
-                                    "\tmovl	$%s, %%esi\n"
+                                    "\tmovl	_%s, %%esi\n"
                                     "\tleaq	printFloarStr(%%rip), %%rax\n"
                                     "\tmovq	%%rax, %%rdi\n"
                                     "\tcall	printf@PLT\n\n",
                         itTac->res->text);
             else if (itTac->res->dataType == DATATYPE_INT)
                 fprintf(outputFile, "##TAC_PRINT\n"
-                                    "\tmovl	$%s, %%esi\n"
+                                    "\tmovl	_%s, %%esi\n"
                                     "\tleaq	printIntStr(%%rip), %%rax\n"
                                     "\tmovq	%%rax, %%rdi\n"
                                     "\tcall	printf@PLT\n\n",
@@ -67,17 +108,30 @@ void generateAsm(tac *firstTac, AST *ast)
             break;
 
         case TAC_ADD:
-            fprintf(outputFile, "##TAC_ADD\n"
-                                "\tmovl	%s(%%rip), %%eax\n"
-                                "\taddl	$%s, %%eax\n"
-                                "\tmovl	%%eax, %s(%%rip)\n\n",
-                    itTac->op1->text, itTac->op2->text, itTac->res->text);
+            fprintf(outputFile, "##TAC_ADD\n");
+            if (SYMBOL_LIT_CHAR && itTac->op1->text[0] == '\'')
+                fprintf(outputFile, "\tmovl	_char%c(%%rip), %%eax\n", itTac->op1->text[1]);
+            else
+                fprintf(outputFile, "\tmovl	_%s(%%rip), %%eax\n", itTac->op1->text);
+            if (SYMBOL_LIT_CHAR && itTac->op2->text[0] == '\'')
+                fprintf(outputFile, "\taddl	_char%c(%%rip), %%eax\n", itTac->op2->text[1]);
+            else
+                fprintf(outputFile, "\taddl	_%s(%%rip), %%eax\n", itTac->op2->text);
+            fprintf(outputFile, "\tmovl	%%eax, %s(%%rip)\n\n", itTac->res->text);
             break;
 
         case TAC_SUB:
-            fprintf(outputFile, "##Assembly code \n\n");
+            fprintf(outputFile, "##TAC_SUB\n");
+            if (SYMBOL_LIT_CHAR && itTac->op1->text[0] == '\'')
+                fprintf(outputFile, "\tmovl	_char%c(%%rip), %%eax\n", itTac->op1->text[1]);
+            else
+                fprintf(outputFile, "\tmovl	_%s(%%rip), %%eax\n", itTac->op1->text);
+            if (SYMBOL_LIT_CHAR && itTac->op2->text[0] == '\'')
+                fprintf(outputFile, "\tsubl	_char%c(%%rip), %%eax\n", itTac->op2->text[1]);
+            else
+                fprintf(outputFile, "\tsubl	_%s(%%rip), %%eax\n", itTac->op2->text);
+            fprintf(outputFile, "\tmovl	%%eax, %s(%%rip)\n\n", itTac->res->text);
             break;
-
         case TAC_MUL:
             fprintf(outputFile, "##Assembly code \n\n");
             break;
@@ -186,13 +240,16 @@ void generateAsm(tac *firstTac, AST *ast)
             break;
 
         case TAC_VARDEC:
-            if (dec == 0)
-            {
-                fprintf(outputFile, "\t.data \n");
-                dec = 1;
-            }
-            fprintf(outputFile, "%s: \n", itTac->res->text);
-            fprintf(outputFile, "\t.long\t%s\n", itTac->op1->text);
+            fprintf(outputFile, "##TAC_VARDEC\n");
+            if (itTac->op1->dataType == DATATYPE_CHAR && itTac->op1->text[0] == '\'')
+                fprintf(outputFile, "\tmovl	_char%c(%%rip), ", itTac->op1->text[1]);
+            else if (itTac->op1->dataType == DATATYPE_FLOAT)
+                fprintf(outputFile, "\tmovl	_%d(%%rip), ", strtof(itTac->op1->text, NULL));
+            else
+                fprintf(outputFile, "\tmovl	_%s(%%rip), ", itTac->op1->text);
+            fprintf(outputFile, "%%eax\n");
+            fprintf(outputFile, "\tmovl	%%eax, ");
+            fprintf(outputFile, "_%s(%%rip)\n\n", itTac->res->text);
             break;
 
         default:

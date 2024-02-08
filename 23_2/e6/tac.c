@@ -230,11 +230,11 @@ tac *createTacs(AST *node, HASH_NODE *currentLoopLabel)
     case AST_NOT:
         return createBinop(TAC_NOT, sons);
     case AST_ATTR:
-        return tacJoin(tacJoin(sons[0], newTac(TAC_MOVE, node->son[0]->symbol, sons[1] ? sons[1]->res : 0, 0)), sons[1]);
+        return tacJoin(sons[1], tacJoin(sons[0], newTac(TAC_MOVE, node->son[0]->symbol, sons[1] ? sons[1]->res : 0, 0)));
     case AST_VECATTR:
         return tacJoin(sons[0], tacJoin(sons[1], newTac(TAC_MOVEVEC, node->son[0]->son[0]->symbol, node->son[0]->son[1]->symbol, sons[1] ? sons[1]->res : 0)));
     case AST_INPUT:
-        return tacJoin(sons[0], newTac(TAC_INPUT, sons[1] ? sons[1]->res : 0, 0, 0));
+        return tacJoin(sons[0], newTac(TAC_INPUT, makeTemp(), 0, 0));
     case AST_PRINT:
         return tacJoin(sons[0], newTac(TAC_PRINT, sons[0] ? sons[0]->res : 0, 0, 0));
     case AST_RETURN:

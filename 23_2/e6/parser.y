@@ -155,7 +155,7 @@ print:		KW_PRINT string				{ $$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0, getLineNu
 return:		KW_RETURN exp				{ $$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0, getLineNumber()); }
 	;
 
-flowCmd:	KW_IF '('exp')' cmdStart						{ $$ = astCreate(AST_IF, 0, $3, $5, 0, 0, getLineNumber()); }
+flowCmd:	KW_IF '('exp')' cmdStart						{ $$ = astCreate(AST_IF, 0, $3, $5, 0, 0, getLineNumber());}
 	|		KW_IF '('exp')' cmdStart KW_ELSE cmdStart		{ $$ = astCreate(AST_IFELSE, 0, $3, $5, $7, 0, getLineNumber()); }
 	|		KW_WHILE '('exp')' cmdStart						{ $$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0, getLineNumber()); }
 	;

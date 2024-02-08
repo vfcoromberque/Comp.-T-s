@@ -34,6 +34,8 @@ HASH_NODE *hashFind(char *text)
 
 HASH_NODE *hashInsert(char *text, int type, int datatype)
 {
+    static int i = 0;
+
     HASH_NODE *newnode;
     int address = hashAddress(text);
 
@@ -54,6 +56,9 @@ HASH_NODE *hashInsert(char *text, int type, int datatype)
     case SYMBOL_LIT_FLOAT:
         newnode->dataType = DATATYPE_FLOAT;
         break;
+    case SYMBOL_LIT_STRING:
+        newnode->strCode = i;
+        i++;
     default:
         break;
     }
@@ -71,7 +76,7 @@ void hashPrint(void)
     HASH_NODE *node;
     for (i = 0; i < HASH_SIZE; ++i)
         for (node = Table[i]; node; node = node->next)
-            printf("Table[%d] has %s\n", i, node->text);
+            printf("Table[%d] has %s code %d\n", i, node->text, node->strCode);
 }
 
 int hashCheckUndeclared()

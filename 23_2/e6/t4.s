@@ -25,6 +25,8 @@ c:
 	.string	"%f\n"
 .LC2:
 	.string	"%c\n"
+.LC3:
+	.string	"ababa"
 	.text
 	.globl	main
 	.type	main, @function
@@ -42,6 +44,24 @@ main:
 	movl	%eax, a(%rip)
 	movb	$121, c(%rip)
 	movl	$98, a(%rip)
+	movl	a(%rip), %eax
+	subl	$1, %eax
+	movl	%eax, a(%rip)
+	movl	a(%rip), %eax
+	movslq	%eax, %rdx
+	imulq	$1431655766, %rdx, %rdx
+	shrq	$32, %rdx
+	sarl	$31, %eax
+	movl	%eax, %ecx
+	movl	%edx, %eax
+	subl	%ecx, %eax
+	movl	%eax, a(%rip)
+	movl	a(%rip), %edx
+	movl	%edx, %eax
+	sall	$2, %eax
+	addl	%edx, %eax
+	addl	%eax, %eax
+	movl	%eax, a(%rip)
 	movl	$5, %esi
 	leaq	.LC0(%rip), %rax
 	movq	%rax, %rdi
@@ -60,6 +80,10 @@ main:
 	movsbl	%al, %eax
 	movl	%eax, %esi
 	leaq	.LC2(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	leaq	.LC3(%rip), %rax
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	printf@PLT
