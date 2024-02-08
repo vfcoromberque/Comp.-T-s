@@ -53,6 +53,7 @@
 #define TAC_IF 32
 
 #define TAC_FOODEC 33
+#define TAC_VARDEC 34
 
 typedef struct tac
 {

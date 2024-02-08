@@ -154,6 +154,9 @@ void printTac(tac *l)
     case TAC_FOODEC:
         fprintf(stderr, "FOODEC(");
         break;
+    case TAC_VARDEC:
+        fprintf(stderr, "VARDEC(");
+        break;
 
     default:
         fprintf(stderr, "UNKNOWN TAC TYPE(");
@@ -196,7 +199,7 @@ tac *createTacs(AST *node, HASH_NODE *currentLoopLabel)
     case AST_SYMBOL:
         return newTac(TAC_SYMBOL, node->symbol, 0, 0);
     case AST_IDDEC:
-        return tacJoin(sons[0], newTac(TAC_MOVE, node->son[1]->symbol, sons[2] ? sons[2]->res : 0, 0));
+        return tacJoin(sons[0], newTac(TAC_VARDEC, node->son[1]->symbol, sons[2] ? sons[2]->res : 0, 0));
 
     case AST_ADD:
         return createBinop(TAC_ADD, sons);

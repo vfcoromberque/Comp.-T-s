@@ -13,7 +13,7 @@ int yyparse();
 int getLineNumber();
 
 extern int checkSemantic();
-extern void asmGenerate(tac *firstTac, AST *ast);
+extern void generateAsm(tac *firstTac, AST *ast);
 
 extern AST *getRoot();
 extern tac *getTACs();
@@ -48,8 +48,6 @@ int main(int argc, char **argv)
 
     yyparse();
 
-    // printf("Main done %d linhas\n", getLineNumber());
-
     hashPrint();
 
     checkSemantic();
@@ -61,7 +59,7 @@ int main(int argc, char **argv)
     astPrintCode(getRoot(), output);
 
     fprintf(stderr, "\nCompiling to an *.s file\n\n");
-    asmGenerate(getTACs(), getRoot());
+    generateAsm(getTACs(), getRoot());
 
     exit(0);
 }

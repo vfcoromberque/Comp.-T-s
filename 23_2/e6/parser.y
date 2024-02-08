@@ -221,7 +221,7 @@ int: 	LIT_INT							{ $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0, getLineNumber()
 %%
 
 tac* getTACs(){
-  return rewindTac(createTacs(root, 0));
+  return programTacs;
 }
 
 void checkSemantic(){

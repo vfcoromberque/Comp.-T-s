@@ -8,13 +8,6 @@
 #include "tac.h"
 #include "ast.h"
 
-void addLiteral(FILE *outputFile);
-
-void addData(FILE *outputFile, AST *node);
-
-void asmBinOps(tac *itTac, FILE *outputFile);
-void asmLogicOps(tac *itTac, FILE *outputFile);
-
-void asmGenerate(tac *firstTac, AST *ast);
+void generateAsm(tac *firstTac, AST *ast);
 
 #endif
