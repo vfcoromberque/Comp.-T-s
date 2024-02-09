@@ -63,7 +63,7 @@ code main
 
 code incn
   {
-  return x + n;
+  return x;
   }
 
 // end of file

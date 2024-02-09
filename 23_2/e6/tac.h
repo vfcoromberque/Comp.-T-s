@@ -41,11 +41,8 @@
 #define TAC_RETURN 23
 
 #define TAC_VECCALL 24
-#define TAC_VECVAR 25
-#define TAC_VECINIT 26
 #define TAC_INPUT 27
 #define TAC_PARAM 28
-#define TAC_LIST 29
 
 #define TAC_PRINT 30
 

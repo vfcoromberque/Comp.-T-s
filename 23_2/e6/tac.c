@@ -133,20 +133,11 @@ void printTac(tac *l)
     case TAC_VECCALL:
         fprintf(stderr, "VECCALL(");
         break;
-    case TAC_VECVAR:
-        fprintf(stderr, "VECVAR(");
-        break;
-    case TAC_VECINIT:
-        fprintf(stderr, "VECINIT(");
-        break;
     case TAC_INPUT:
         fprintf(stderr, "INPUT(");
         break;
     case TAC_PARAM:
         fprintf(stderr, "PARAM(");
-        break;
-    case TAC_LIST:
-        fprintf(stderr, "LIST(");
         break;
     case TAC_PRINT:
         fprintf(stderr, "PRINT(");

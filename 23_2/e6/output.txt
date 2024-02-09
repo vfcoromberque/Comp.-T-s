@@ -30,5 +30,5 @@
   print  "A era=15\n"  ;  
   }  ;  if  (  i  ==  100  )  {  print  "Nao tem como isso...\n"  ;  
   }  else  print  "OK!\n"  ;  
-  {  {  }  }  {  }  }  code  incn  {  return  x  +  n  ;  
+  {  {  }  }  {  }  }  code  incn  {  return  x  ;  
   } 
